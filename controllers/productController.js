@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 
 
 /**
- * register function
+ * getAllProduct function
  * @param req
  * @param res
  * @returns {Promise<void>}
@@ -22,7 +22,7 @@ const getAllProduct = async (req, res) => {
 }
 
 /**
- * register function
+ * getProductById function
  * @param req
  * @param res
  * @returns {Promise<void>}
@@ -39,7 +39,7 @@ const getProductById = async (req, res) => {
 }
 
 /**
- * register function
+ * createProduct function
  * @param req
  * @param res
  * @returns {Promise<void>}
@@ -64,7 +64,7 @@ const createProduct = async (req, res) => {
 }
 
 /**
- * register function
+ * deleteProduct function
  * @param req
  * @param res
  * @returns {Promise<void>}
@@ -90,7 +90,7 @@ const deleteProduct = async (req, res) => {
 
 
 /**
- * register function
+ * editProduct function
  * @param req
  * @param res
  * @returns {Promise<void>}
