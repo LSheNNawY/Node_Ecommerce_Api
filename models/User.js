@@ -1,15 +1,11 @@
 const mongoose = require('mongoose');
 const {Schema} = require("mongoose");
 const userSchema = new mongoose.Schema({
-    firstName: {
+    username: {
         type: String,
-        required: [true, "First name is required"],
+        required: [true, "Username is required"],
         minLength: 3,
         maxLength: 15
-    },
-    lastName: {
-        type: String,
-        required: [true, "Last name is required"],
     },
     email: {
         type: String,
@@ -27,21 +23,15 @@ const userSchema = new mongoose.Schema({
         enum: ['Male', 'Female'],
         required: true
     },
-    posts: [{
-        type: Schema.Types.ObjectId,
-        ref: "Post",
-        required: false
-    }],
-    followings: [{
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: false
-    }],
-    avatar: {
+    image: {
         type: String,
-        required: false,
-        default: ""
-    }
+        required: false
+    },
+    orders: [{
+        type: Schema.Types.ObjectId,
+        ref: "Order",
+        required: false
+    }]
 
 }, {timestamps: {createdAt: 'created_at', updatedAt: false}});
 const User = mongoose.model('User', userSchema);
