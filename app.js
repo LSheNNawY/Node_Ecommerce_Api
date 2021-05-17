@@ -11,6 +11,11 @@ require('./helpers/dbConnection');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
+
+//productRoute
+const productRoute=require("./routes/product")
+
+
 const app = express();
 
 // view engine setup
@@ -31,6 +36,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // app.use('/', indexRouter);
 app.use('/api', usersRouter);
+
+
+
+app.use('/products', productRoute);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
