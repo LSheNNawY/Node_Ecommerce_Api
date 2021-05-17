@@ -30,10 +30,16 @@ const getAllProduct = async (req, res) => {
 
 const getProductById = async (req, res) => {
     const product = await Product.findOne({ _id: req.params.id });
-    if (product) {
-        res.send(product);
-    } else {
-        res.status(404).send({ message: 'Product Not Found.' });
+    try{
+        if (product) {
+            res.send(product);
+        } else {
+            res.status(404).send({ message: 'product not found.' });
+        }
+
+    }catch (err){
+        res.status(401).json({"error": err});
+
     }
 
 }
@@ -50,17 +56,23 @@ const createProduct = async (req, res) => {
         name: req.body.name,
         price: req.body.price,
         image: req.body.image,
-        brand: req.body.brand,
-        category: req.body.category,
+        // brand: req.body.brand,
+        // category: req.body.category,
         description: req.body.description,
     });
     const newProduct = await product.save();
-    if (newProduct) {
-        return res
-            .status(201)
-            .send({ message: 'new product created', data: newProduct });
+    try {
+
+        if (newProduct) {
+            return res
+                .status(201)
+                .send({ message: 'new product created', data: newProduct });
+        }
+        return res.status(500).send({ message: ' Error in Creating Product.' });
+    }catch(err){
+        res.status(401).json({"error": err});
+
     }
-    return res.status(500).send({ message: ' Error in Creating Product.' });
 }
 
 /**
@@ -82,7 +94,7 @@ const deleteProduct = async (req, res) => {
             res.send('Error in Deletion.');
         }
     }catch(err){
-        res.status(401).json({"error": "Error"});
+        res.status(401).json({"error": err});
 
     }
 
@@ -117,7 +129,7 @@ const editProduct = async (req, res) => {
         }
         return res.status(500).send({ message: ' error in updating product.' });
     }catch(err) {
-        res.status(401).json({"error": "Error"});
+        res.status(401).json({"error": err});
 
     }
 

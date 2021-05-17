@@ -10,19 +10,19 @@ const prodctSchema = new mongoose.Schema({
         { type: String,
             required: true
         },
-    brand:
-        { type: String,
-            required: true
-        },
+    // brand:
+    //     { type: String,
+    //         required: true
+    //     },
     price:
         { type: Number,
             default: 0,
             required: true
         },
-    category:
-        { type: String,
-            required: true
-        },
+    // category:
+    //     { type: String,
+    //         required: true
+    //     },
     description:
         {
             type: String,
