@@ -11,6 +11,6 @@ router.get('/profile', getUser);
 
 // router.get('/edit/:id', editProfile);
 
-// router.put('/:id', updateProfile);
+router.put('/:id', updateProfile);
 
 module.exports = router;
