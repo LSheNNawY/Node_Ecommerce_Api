@@ -84,6 +84,52 @@ const login = async (req, res) => {
 }
 
 /**
+ * get user function
+ * @param req
+ * @param res
+ * @returns {Promise<*>}
+ */
+const getUser = async (req, res) => {
+    try {
+        const user = await User
+            .find({email: 'sara@gmail.com'})
+        return res.status(200).json(user);
+
+    } catch (err) {
+        return res.status(400).send('Error getting user');
+    }
+}
+
+/**
+ * update profile function
+ * @param req
+ * @param res
+ * @returns {Promise<*>}
+ */
+const updateProfile = async (req, res) => {
+    const routePath = req.route.path;
+
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, {
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password,
+            gender: req.body.gender,
+            // image: req.body.image
+        }, {new: true});
+
+        if (!user)
+            return res.status(401).send('Error updating user');
+
+        return res.status(200).json({"msg": "User updated successfully"});
+
+    } catch (err) {
+        const handledErrors = errorsHandler(routePath, err);
+        return res.status(500).json(handledErrors)
+    }
+}
+
+/**
  * error handler function
  * @param routePath
  * @param err
@@ -109,5 +155,7 @@ const errorsHandler = (routePath, err) => {
 
 module.exports = {
     register,
-    login
+    login,
+    getUser,
+    updateProfile
 }

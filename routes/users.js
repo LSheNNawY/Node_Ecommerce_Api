@@ -28,4 +28,12 @@ router.post('/logout', jwtAuth, async (req, res) => {
     return res.status(200).json({"msg": "Logged out"})
 });
 
+router.get('/profile', jwtAuth, async (req, res) => {
+    await usersController.getUser(req, res)
+})
+
+router.put('/users/:id', jwtAuth, async (req, res) => {
+    await usersController.updateProfile(req, res)
+})
+
 module.exports = router;
