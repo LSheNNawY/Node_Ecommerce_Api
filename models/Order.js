@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const {Schema} = require("mongoose");
+const Joi = require('joi');
+
 const orderSchema = new mongoose.Schema({
     user: {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: "User"
     },
     totalPrice:{
         type: Number,
@@ -20,9 +22,19 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['pending','accepted','rejected'],
-        required: true
+        default:"pending"
     },
 },{timestamps: {createdAt: 'created_at', updatedAt: false}});
 const Order = mongoose.model('Order', orderSchema);
 
-module.exports = Order;
+function validateOrder(order){
+    const schema = Joi.object({
+        totalPrice: Joi.number().required(),
+        products:Joi.required()   
+    });
+    return schema.validate(order);
+}
+
+module.exports.Order = Order;
+module.exports.validate = validateOrder;
+

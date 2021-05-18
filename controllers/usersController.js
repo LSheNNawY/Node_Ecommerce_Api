@@ -71,6 +71,7 @@ const login = async (req, res) => {
                     `user_id=${user.id}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
                     `username=${user.username}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
                 ]);
+                console.log(res);
 
                 return res.status(200).json({...data, token: token});
             }

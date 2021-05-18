@@ -25,6 +25,7 @@ const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
+
 // for static files
 app.use('/api', express.static(path.join(__dirname, './public')));
 
