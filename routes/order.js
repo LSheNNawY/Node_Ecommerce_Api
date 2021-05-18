@@ -12,5 +12,13 @@ orderRouter.post('/', async (req, res,next) => {
     await ordersController.createOrder(req, res);
 });
 
+orderRouter.get('/:id', async function (req, res, next) {
+    await ordersController.getById(req, res);
+});
+
+orderRouter.put('/:id', async function (req, res, next) {
+    await ordersController.getByIdAndUpdate(req, res);
+});
+
 
 module.exports= orderRouter;
