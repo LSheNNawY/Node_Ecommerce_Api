@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
-<<<<<<< HEAD
 const {getUser, editProfile, updateProfile} = require('../controllers/UserController')
-=======
 const usersController = require('../controllers/usersController')
 const jwtAuth = require('../helpers/authMiddleware')
->>>>>>> master
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
