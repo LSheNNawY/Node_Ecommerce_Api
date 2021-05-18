@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const {getUser, editProfile, updateProfile} = require('../controllers/UserController')
 const usersController = require('../controllers/usersController')
 const jwtAuth = require('../helpers/authMiddleware')
 
@@ -27,5 +28,11 @@ router.post('/logout', jwtAuth, async (req, res) => {
 
     return res.status(200).json({"msg": "Logged out"})
 });
+
+router.get('/profile', getUser);
+
+// router.get('/edit/:id', editProfile);
+
+router.put('/:id', updateProfile);
 
 module.exports = router;
