@@ -16,6 +16,11 @@ const usersRouter = require('./routes/users');
 const productRoute = require("./routes/product")
 
 
+//orderRouter
+const orderRouter = require("./routes/order")
+
+
+
 const app = express();
 
 // view engine setup
@@ -39,6 +44,9 @@ app.use('/api', usersRouter);
 
 
 app.use('/products', productRoute);
+
+app.use('/orders', orderRouter);
+
 
 
 // catch 404 and forward to error handler

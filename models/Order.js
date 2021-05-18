@@ -22,13 +22,7 @@ const orderSchema = new mongoose.Schema({
         enum: ['pending','accepted','rejected'],
         required: true
     },
-
-    timestamps: { 
-        createdAt: 'created_at', 
-        updatedAt:  false 
-    },
-
-});
+},{timestamps: {createdAt: 'created_at', updatedAt: false}});
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;
