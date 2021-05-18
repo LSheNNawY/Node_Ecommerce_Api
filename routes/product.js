@@ -1,46 +1,41 @@
 const express = require('express');
 const Product=require('../models/product');
 const router = express.Router();
+const productController = require('../controllers/productController')
 
 
 
 //get all product
 
 router.get('/',async (req, res, next)=>{
-    const products = await Product.find({});
-        res.send(products);
+    await productController.getAllProduct(req, res);
+
 
 })
 
 
 // get product by id
 router.get('/:id', async (req, res,next) => {
-    const product = await Product.findOne({ _id: req.params.id });
-    if (product) {
-        res.send(product);
-    } else {
-        res.status(404).send({ message: 'product not found.' });
-    }
+    await productController.getProductById(req, res);
+
 });
 
 //create product
 router.post('/', async (req, res,next) => {
-    const product = new Product({
-        name: req.body.name,
-        price: req.body.price,
-        image: req.body.image,
-        brand: req.body.brand,
-        category: req.body.category,
-        description: req.body.description,
-    });
-    const newProduct = await product.save();
-    if (newProduct) {
-        return res
-            .status(201)
-            .send({ message: 'new product created', data: newProduct });
-    }
-    return res.status(500).send({ message: ' error in creating product.' });
+    await productController.createProduct(req, res);
+
 });
 
+// delete product by id
+router.delete('/:id', async (req, res,next) => {
+    await productController.deleteProduct(req, res);
+
+});
+
+// edit product by id
+router.put('/:id', async (req, res,next) => {
+    await productController.editProduct(req, res);
+
+});
 
 module.exports=router;
