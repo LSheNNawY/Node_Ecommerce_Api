@@ -49,33 +49,47 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const {email, password} = req.body;
     const data = {};
+    console.log(req.body);
 
     try {
         const user = await User.findOne({"email": email});
         if (!user) {
-            return res.status(401).json({"error": "invalid credentials"})
+            return res.status(401).json({"error": "There is no user matches this email"})
         }
         bcrypt.compare(password, user.password, (err, matched) => {
             if (matched) {
                 data.userId = user.id;
                 data.username = user.username;
                 data.email = user.email;
-                data.image = user.image;
+                // data.image = user.image;
                 data.created_at = user.created_at;
 
                 const token = jwt.sign({email: user.email}, process.env.SECRET_KEY)
                 const expirationTime = new Date(Date.now() + parseInt(process.env.JWT_EXPIRATION));
 
-                res.setHeader('set-cookie', [
-                    `token=${token}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
-                    `user_id=${user.id}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
-                    `username=${user.username}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
-                ]);
-                console.log(res);
+                // res.setHeader('set-cookie', [
+                //     `token=${token}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
+                //     `user_id=${user.id}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
+                //     `username=${user.username}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
+                // ]);
+                res.cookie("token", token, {
+                    httpOnly: true,
+                    expires: expirationTime,
+                })
 
-                return res.status(200).json({...data, token: token});
+                res.cookie("email", data.email, {
+                    httpOnly: true,
+                    expires: expirationTime,
+                })
+                 
+                res.cookie("userId", data.userId, {
+                    httpOnly: true,
+                    expires: expirationTime,
+                })
+
+                return res.status(200).json({...data});
             }
-            return res.status(401).json({"error": "invalid credentials"})
+            return res.status(401).json({"error": "Password is incorrect"})
         })
 
     } catch (err) {
