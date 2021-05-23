@@ -7,34 +7,48 @@ const orderSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     },
-    totalPrice:{
+    totalPrice: {
         type: Number,
         default: 0,
         required: true
     },
- 
-    products: [{
-        type: Schema.Types.ObjectId,
-        ref: "Product",
-        required:true
-    }],
+
+    products: [
+        {
+            product_id:
+                {
+                    type: Schema.Types.ObjectId,
+                    ref: "Product",
+                    required: true
+                },
+            quantity:
+                {
+                    type: Number,
+                    default: 1
+
+                },
+        }
+
+    ],
+
 
     status: {
         type: String,
-        enum: ['pending','accepted','rejected'],
-        default:"pending"
+        enum: ['pending', 'accepted', 'rejected'],
+        default: "pending"
     },
-},{timestamps: {createdAt: 'created_at', updatedAt: false}});
+}, {timestamps: {createdAt: 'created_at', updatedAt: false}});
 const Order = mongoose.model('Order', orderSchema);
 
-function validateOrder(order){
+function validateOrder(order) {
     const schema = Joi.object({
         totalPrice: Joi.number().required(),
-        products:Joi.required()   
+        products: Joi.required()
     });
     return schema.validate(order);
 }
 
 module.exports.Order = Order;
 module.exports.validate = validateOrder;
+
 
