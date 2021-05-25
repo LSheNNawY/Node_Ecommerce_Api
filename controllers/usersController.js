@@ -1,7 +1,7 @@
-const User = require('../models/User')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
 /**
  * register function
  * @param req
@@ -13,32 +13,42 @@ const register = async (req, res) => {
     const routePath = req.route.path;
 
     try {
-        const user = new User(body)
+        const user = new User(body);
         // generate a salt for hash
         const salt = await bcrypt.genSalt(10);
         // hashing password
         user.password = await bcrypt.hash(user.password, salt);
         // set avatar regarding to gender if no image uploaded
         if (!user.image) {
-            if (user.gender === 'Male') {
-                user.avatar = 'male.jpg'
+            if (user.gender === "Male") {
+                user.image = "male.jpg";
             } else {
-                user.avatar = 'female.png'
+                user.image = "female.png";
             }
         } else {
-            /////////////////////////////////////////////
             // image upload handling [new image name && save it on server]
-            user.image = body.image;
-        }
-        const savedUser = await user.save();
+            const imageName = Math.random() * 100000 + Date.now() + ".png";
+            const path = "./public/uploads/" + imageName;
+            console.log(path);
+            const image = user.image;
+            user.image = imageName;
 
-        res.status(200).json(savedUser);
+            // to convert base64 format into random filename
+            const base64Data = image.replace(
+                /^data:([A-Za-z-+/]+);base64,/,
+                ""
+            );
+            fs.writeFile(path, base64Data, { encoding: "base64" }, () => {});
+        }
+
+        user.save().then(() => {
+            res.status(200).json({ ok: true });
+        });
     } catch (err) {
         const handledErrors = errorsHandler(routePath, err);
         res.status(401).json(handledErrors);
     }
-}
-
+};
 
 /**
  * login function
@@ -47,25 +57,29 @@ const register = async (req, res) => {
  * @returns {Promise<void>}
  */
 const login = async (req, res) => {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
     const data = {};
     console.log(req.body);
 
     try {
-        const user = await User.findOne({"email": email});
+        const user = await User.findOne({ email: email });
         if (!user) {
-            return res.status(401).json({"error": "There is no user matches this email"})
+            return res.status(401).json({ error: "invalid credentials" });
         }
         bcrypt.compare(password, user.password, (err, matched) => {
             if (matched) {
                 data.userId = user.id;
                 data.username = user.username;
                 data.email = user.email;
-                // data.image = user.image;
                 data.created_at = user.created_at;
 
-                const token = jwt.sign({email: user.email}, process.env.SECRET_KEY)
-                const expirationTime = new Date(Date.now() + parseInt(process.env.JWT_EXPIRATION));
+                const token = jwt.sign(
+                    { email: user.email },
+                    process.env.SECRET_KEY
+                );
+                const expirationTime = new Date(
+                    Date.now() + parseInt(process.env.JWT_EXPIRATION)
+                );
 
                 // res.setHeader('set-cookie', [
                 //     `token=${token}; httpOnly=true; expires: ${expirationTime}; SameSite=None; Secure`,
@@ -75,27 +89,28 @@ const login = async (req, res) => {
                 res.cookie("token", token, {
                     httpOnly: true,
                     expires: expirationTime,
-                })
+                });
 
                 res.cookie("email", data.email, {
                     httpOnly: true,
                     expires: expirationTime,
-                })
-                 
+                });
+
                 res.cookie("userId", data.userId, {
                     httpOnly: true,
                     expires: expirationTime,
-                })
+                });
 
-                return res.status(200).json({...data});
+                return res.status(200).json({ ...data });
             }
-            return res.status(401).json({"error": "Password is incorrect"})
-        })
-
+            return res.status(401).json({ error: "Invalid credentials" });
+        });
     } catch (err) {
-        res.status(401).json({"error": "Error log you in, try again"});
+        res.status(401).json({
+            error: "Error logging you in, please try again later",
+        });
     }
-}
+};
 
 /**
  * get user function
@@ -105,14 +120,12 @@ const login = async (req, res) => {
  */
 const getUser = async (req, res) => {
     try {
-        const user = await User
-            .find({email: 'sara@gmail.com'})
+        const user = await User.find({ email: "sara@gmail.com" });
         return res.status(200).json(user);
-
     } catch (err) {
-        return res.status(400).send('Error getting user');
+        return res.status(400).send("Error getting user");
     }
-}
+};
 
 /**
  * update profile function
@@ -124,24 +137,26 @@ const updateProfile = async (req, res) => {
     const routePath = req.route.path;
 
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, {
-            username: req.body.username,
-            email: req.body.email,
-            password: req.body.password,
-            gender: req.body.gender,
-            // image: req.body.image
-        }, {new: true});
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            {
+                username: req.body.username,
+                email: req.body.email,
+                password: req.body.password,
+                gender: req.body.gender,
+                // image: req.body.image
+            },
+            { new: true }
+        );
 
-        if (!user)
-            return res.status(401).send('Error updating user');
+        if (!user) return res.status(401).send("Error updating user");
 
-        return res.status(200).json({"msg": "User updated successfully"});
-
+        return res.status(200).json({ msg: "User updated successfully" });
     } catch (err) {
         const handledErrors = errorsHandler(routePath, err);
-        return res.status(500).json(handledErrors)
+        return res.status(500).json(handledErrors);
     }
-}
+};
 
 /**
  * error handler function
@@ -152,14 +167,14 @@ const updateProfile = async (req, res) => {
 const errorsHandler = (routePath, err) => {
     const validationErrors = {};
 
-    if (routePath === '/register') {
+    if (routePath === "/register") {
         if (err.code === 11000) {
-            validationErrors['email'] = 'Email already taken!';
+            validationErrors["email"] = "Email already taken!";
             return validationErrors;
         }
 
-        if (err.message.includes('User validation failed'))
-            Object.values(err.errors).forEach(({properties}) => {
+        if (err.message.includes("User validation failed"))
+            Object.values(err.errors).forEach(({ properties }) => {
                 validationErrors[properties.path] = properties.message;
             });
     }
@@ -171,5 +186,5 @@ module.exports = {
     register,
     login,
     getUser,
-    updateProfile
-}
+    updateProfile,
+};
