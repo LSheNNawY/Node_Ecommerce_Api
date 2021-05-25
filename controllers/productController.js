@@ -1,4 +1,5 @@
 const Product = require('../models/product')
+const mongoose = require("mongoose");
 /**
  * getAllProduct function
  * @param req
@@ -8,9 +9,20 @@ const Product = require('../models/product')
 
 const getAllProduct = async (req, res) => {
     try {
-        const products = await Product.find({});
-        return res.status(200).json(products);
+        if (req.query.ids) {
+            const ids = req.query.ids.split(',');
+            const productsIds = ids.map(id => mongoose.Types.ObjectId(id))
+            const products = await Product.find({_id: {$in: productsIds}});
+
+            return res.status(200).json(products);
+        } else {
+            const products = await Product.find({});
+            return res.status(200).json(products);
+        }
+
+
     } catch (err) {
+        console.log(err)
         return res.status(500).json({"msg": "Error getting products"});
     }
 }
@@ -122,3 +134,4 @@ module.exports = {
     deleteProduct,
     editProduct
 }
+

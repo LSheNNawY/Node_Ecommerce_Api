@@ -23,10 +23,10 @@ const getAll = async(req,res)=>{
 
 const createOrder = async(req,res)=>{
     const { body } = req;
-    const { error } =  await validate(body);
-    if (error) return res.status(400).send(error.details[0].message); 
-    const user = await User.findById("60a3f4a884a78a0e78d0f50b"); //authenticated user
-    body.user=user
+  //  const { error } =  await validate(body);
+  //  if (error) return res.status(400).send(error.details[0].message); 
+  //  const user = await User.findById("60a3f4a884a78a0e78d0f50b").select("_id"); //authenticated //user
+  //  body.user=user
 
     try {
         const newOrder = await Order.create(body);
