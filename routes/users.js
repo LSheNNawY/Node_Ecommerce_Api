@@ -49,6 +49,10 @@ router.get("/profile", jwtAuth, async (req, res) => {
   await usersController.getUser(req, res);
 });
 
+router.get("/users/:id", async (req, res) => {
+  await usersController.getUser(req, res);
+});
+
 router.put("/users/:id", jwtAuth, async (req, res) => {
   await usersController.updateProfile(req, res);
 });

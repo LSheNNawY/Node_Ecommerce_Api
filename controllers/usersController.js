@@ -41,9 +41,8 @@ const register = async (req, res) => {
             fs.writeFile(path, base64Data, { encoding: "base64" }, () => {});
         }
 
-        user.save().then(() => {
-            res.status(200).json({ ok: true });
-        });
+        await user.save()
+        res.status(200).json({ ok: true })
     } catch (err) {
         const handledErrors = errorsHandler(routePath, err);
         res.status(401).json(handledErrors);
@@ -120,7 +119,7 @@ const login = async (req, res) => {
  */
 const getUser = async (req, res) => {
     try {
-        const user = await User.find({ email: "sara@gmail.com" });
+        const user = await User.findOne({ _id: req.params.id }).select('role -_id');
         return res.status(200).json(user);
     } catch (err) {
         return res.status(400).send("Error getting user");
@@ -143,8 +142,7 @@ const updateProfile = async (req, res) => {
                 username: req.body.username,
                 email: req.body.email,
                 password: req.body.password,
-                gender: req.body.gender,
-                // image: req.body.image
+                gender: req.body.gender
             },
             { new: true }
         );
