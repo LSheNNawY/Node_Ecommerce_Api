@@ -1,24 +1,42 @@
 const mongoose  = require('mongoose');
 const {Order,validate} = require('../models/Order')
+const Product = require('../models/product')
 const User = require('../models/User')
+var lodash = require('lodash');
 
 const getAll = async(req,res)=>{
     console.log(req.query)
     if(req.query.userId){
         try{ const user =await User.findOne(mongoose.Types.ObjectId(req.query.userId))
-            const order = await Order.findOne({},[],{$orderby:{'created_at':-1}}).populate('products').populate('user');
+            const order = await Order.findOne({},[],{$orderby:{ }}).populate('products').populate('user');
             return res.status(200).json(order);
         }
             catch(err){
-               console.log(err)
+                console.log(err)
                 return res.status(400).send({"message":"order not found"});
-
-
             }
-       
     }
     const orders = await Order.find().populate('products').populate('user').sort("createdAt");
-    res.send(orders );
+    const order =orders.map(orders=>orders.products)
+    let product = {}
+    let products=[]
+
+    for (i=0;i<order.length;i++){
+        for(j=0;j<order[i].length;j++){ 
+        const productId=order[i][j].product_id
+        product =  await Product.findById(productId)
+     
+        }
+        products.push(product)
+       
+        console.log(products)
+    }
+
+      
+//    console.log(order[2][0].product_id)
+    // console.log(order)
+  
+    res.send({orders:orders,products:products});
 }
 
 const createOrder = async(req,res)=>{
