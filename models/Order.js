@@ -16,11 +16,11 @@ const orderSchema = new mongoose.Schema({
     products: [
         {
             product_id:
-                {
+                [{
                     type: Schema.Types.ObjectId,
                     ref: "Product",
                     required: true
-                },
+                }],
             quantity:
                 {
                     type: Number,
