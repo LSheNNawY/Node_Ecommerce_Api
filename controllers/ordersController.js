@@ -25,11 +25,9 @@ const getAll = async(req,res)=>{
         for(j=0;j<order[i].length;j++){ 
         const productId=order[i][j].product_id
         product =  await Product.findById(productId)
-     
         }
         products.push(product)
-       
-        console.log(products)
+        // console.log(products)
     }
 
       
