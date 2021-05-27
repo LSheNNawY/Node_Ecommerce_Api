@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const {Order, validate} = require('../models/Order')
 const User = require('../models/User')
+const Product = require('../models/product')
+
 
 const getAll = async (req, res) => {
-    console.log(req.query)
     if (req.query.userId) {
         try {
             const user = await User.findOne(mongoose.Types.ObjectId(req.query.userId))
@@ -18,6 +19,17 @@ const getAll = async (req, res) => {
 
     }
     const orders = await Order.find().populate('products').populate('user').sort("createdAt");
+
+    const products = orders.map((order)=> order.products);
+    let productObj={};
+
+    for(let i=0; i< products.length; i++){
+        for(let j=0; j< products[i].length;j++){
+            product_id = products[i][j].product_id
+            productObj= await Product.findById(product_id );
+            orders[i].products[j].name=productObj.name;
+        }
+    } 
     res.send(orders);
 }
 
@@ -46,12 +58,10 @@ const getById = async (req, res) => {
 }
 const getByIdAndUpdate = async (req, res) => {
     try {
-        const order = await Order.findOneAndUpdate(
-            req.params.id,
-            {
-                status: req.body.status
-            }
-        );
+        console.log(req.body);
+        console.log(req.params.id);
+        const order = await Order.findOneAndUpdate({_id:req.params.id},{status: req.body.status},{new:true});
+
         if (order) {
             res.send(order);
         }
@@ -59,10 +69,9 @@ const getByIdAndUpdate = async (req, res) => {
         return res.status(400).send({"message": "order not found"});
     }
 
-
 }
-
 
 module.exports = {
     getAll, createOrder, getById, getByIdAndUpdate
 }
+
