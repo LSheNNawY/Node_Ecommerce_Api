@@ -27,6 +27,14 @@ const orderSchema = new mongoose.Schema({
                     default: 1
 
                 },
+                name:{
+                    type:String,
+                },
+                price:
+                {
+                     type: Number,
+                }
+
         }
 
     ],

@@ -5,11 +5,29 @@ const User = require('../models/User')
 var lodash = require('lodash');
 
 const getAll = async(req,res)=>{
+    let product = {}
+    let products=[]
+
     console.log(req.query)
     if(req.query.userId){
         try{ const user =await User.findOne(mongoose.Types.ObjectId(req.query.userId))
-            const order = await Order.findOne({},[],{$orderby:{ }}).populate('products').populate('user');
-            return res.status(200).json(order);
+            const order = await Order.findOne({user},[],{$orderby: {'created_at': -1}}).populate('products').populate('user');
+            const products=order.products
+
+          
+            let product = {}
+            // let order_products=[]
+            
+            for (i=0;i<products.length;i++){
+                const productId=products[i].product_id
+                console.log(productId)
+                product =  await Product.findById(productId)
+                // order_products.push(product) 
+               products[i].name=product.name
+               products[i].price=product.price
+               
+            }
+            return res.status(200).json(order);                                                                                                                                                                                                                     
         }
             catch(err){
                 console.log(err)
@@ -18,25 +36,21 @@ const getAll = async(req,res)=>{
     }
     const orders = await Order.find().populate('products').populate('user').sort("createdAt");
     const order =orders.map(orders=>orders.products)
-    let product = {}
-    let products=[]
-
+    
     for (i=0;i<order.length;i++){
         for(j=0;j<order[i].length;j++){ 
         const productId=order[i][j].product_id
         product =  await Product.findById(productId)
+        products.push(product) 
         }
-        products.push(product)
-        // console.log(products)
+        console.log(products)
     }
 
-      
-//    console.log(order[2][0].product_id)
-    // console.log(order)
+    
   
     res.send({orders:orders,products:products});
 }
-
+0
 const createOrder = async(req,res)=>{
     const { body } = req;
   //  const { error } =  await validate(body);
