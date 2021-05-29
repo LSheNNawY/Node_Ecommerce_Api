@@ -17,6 +17,11 @@ const getAllProduct = async (req, res) => {
             const products = await Product.find({_id: {$in: productsIds}});
 
             return res.status(200).json(products);
+        } else if (req.query.search) {
+            console.log(req.query.search)
+            let regex = new RegExp(req.query.search, 'i');
+            const products = await Product.find({name: regex})
+            return res.status(200).json(products);
         } else {
             const products = await Product.find({});
             return res.status(200).json(products);
